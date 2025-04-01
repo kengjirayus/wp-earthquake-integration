@@ -31,6 +31,15 @@ function formatThaiDateTime(date) {
     return date.toLocaleDateString('th-TH', options);
 }
 
+// ปรับความสูง Iframe อัตโนมัติ
+function adjustIframeHeight() {
+    const height = document.documentElement.scrollHeight;
+    window.parent.postMessage({
+        type: 'setIframeHeight',
+        height: height
+    }, '*');
+}
+
 // ฟังก์ชันหลักดึงข้อมูล
 async function loadEarthquakeData() {
     try {
@@ -47,7 +56,7 @@ async function loadEarthquakeData() {
             longitude: CENTER_LON,
             maxradiuskm: RADIUS_KM,
             minmagnitude: MIN_MAGNITUDE,
-            limit: 100  // จำกัดผลลัพธ์สูงสุด
+            limit: 100
         });
 
         const response = await fetch(`${API_URL}&${params.toString()}`);
@@ -67,6 +76,8 @@ async function loadEarthquakeData() {
                 <p>⚠️ ไม่สามารถโหลดข้อมูลได้ โปรดลองใหม่ภายหลัง</p>
                 <button onclick="loadEarthquakeData()">ลองอีกครั้ง</button>
             </div>`;
+    } finally {
+        adjustIframeHeight(); // ปรับความสูงไม่ว่าจะสำเร็จหรือล้มเหลว
     }
 }
 
@@ -75,6 +86,7 @@ function displayData(earthquakes) {
     if (!earthquakes || earthquakes.length === 0) {
         document.getElementById('earthquake-data').innerHTML = `
             <p class="no-data">ไม่พบข้อมูลแผ่นดินไหวล่าสุดในรัศมีย่านนี้</p>`;
+        adjustIframeHeight();
         return;
     }
 
@@ -100,7 +112,7 @@ function displayData(earthquakes) {
         // คำนวณระยะทาง
         const distance = calculateDistance(
             CENTER_LAT, CENTER_LON, 
-            coords[1], coords[0]  // USGS ใช้ลำดับ [longitude, latitude]
+            coords[1], coords[0]
         ).toFixed(0);
 
         // จัดรูปแบบข้อมูล
@@ -108,23 +120,25 @@ function displayData(earthquakes) {
         const mag = props.mag.toFixed(1);
         const depth = coords[2].toFixed(1);
         
-        // ตรวจสอบแผ่นดินไหวอันตราย
-        const isDanger = props.mag >= DANGER_MAGNITUDE;
-        const rowClass = isDanger ? 'danger-row' : '';
-        
-        // แยกชื่อสถานที่และประเทศ/จังหวัด
+        // แยกชื่อสถานที่
         const placeParts = props.place.split(', ');
         const mainLocation = placeParts[0];
         const region = placeParts.slice(1).join(', ');
+        
+        // ตรวจสอบแผ่นดินไหวอันตราย
+        const isDanger = props.mag >= DANGER_MAGNITUDE;
+        const rowClass = isDanger ? 'danger-row' : '';
         
         html += `
             <tr class="${rowClass}">
                 <td>${time}</td>
                 <td>${mag}</td>
                 <td>
-                    <strong>${mainLocation}</strong><br>
-                    <span class="region">${region}</span><br>
-                    <span class="distance">ห่างจากอนุสาวรีย์ชัยสมรภูมิ ${distance} กม.</span>
+                    <div class="location">
+                        <strong>${mainLocation}</strong>
+                        <span class="region">${region}</span>
+                        <span class="distance">ห่างจากอนุสาวรีย์ชัยสมรภูมิ ${distance} กม.</span>
+                    </div>
                 </td>
                 <td>${depth}</td>
             </tr>`;
@@ -132,10 +146,14 @@ function displayData(earthquakes) {
 
     html += `</tbody></table>`;
     document.getElementById('earthquake-data').innerHTML = html;
+    adjustIframeHeight(); // ปรับความสูงหลังแสดงข้อมูล
 }
 
-// โหลดข้อมูลครั้งแรก
-loadEarthquakeData();
+// Event Listeners
+window.addEventListener('load', () => {
+    loadEarthquakeData();
+    window.addEventListener('resize', adjustIframeHeight);
+});
 
 // อัปเดตข้อมูลทุก 10 นาที
 setInterval(loadEarthquakeData, 10 * 60 * 1000);
