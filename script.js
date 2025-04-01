@@ -1,0 +1,132 @@
+// ตั้งค่า API
+const API_URL = 'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson';
+const CENTER_LAT = 13.764618; // ละติจูดอนุสาวรีย์ชัยสมรภูมิ
+const CENTER_LON = 100.538572; // ลองติจูดอนุสาวรีย์ชัยสมรภูมิ
+const RADIUS_KM = 1100;       // รัศมี 1,100 กม.
+const MIN_MAGNITUDE = 5.0;    // แผ่นดินไหวขนาด 5.0 ขึ้นไป
+const DANGER_MAGNITUDE = 6.0; // ระดับที่ถือว่าอันตราย (สีแดง)
+
+// ฟังก์ชันคำนวณระยะทางจากจุดศูนย์กลาง (Haversine formula)
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // รัศมีโลก (กม.)
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+// ฟังก์ชันจัดรูปแบบวันที่ไทย
+function formatThaiDateTime(date) {
+    const options = { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric',
+        hour: '2-digit', 
+        minute: '2-digit',
+        timeZone: 'Asia/Bangkok'
+    };
+    return date.toLocaleDateString('th-TH', options);
+}
+
+// ฟังก์ชันหลักดึงข้อมูล
+async function loadEarthquakeData() {
+    try {
+        // แสดงสถานะกำลังโหลด
+        document.getElementById('earthquake-data').innerHTML = `
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>กำลังโหลดข้อมูลแผ่นดินไหวล่าสุด...</p>
+            </div>`;
+
+        // ดึงข้อมูลจาก API
+        const params = new URLSearchParams({
+            latitude: CENTER_LAT,
+            longitude: CENTER_LON,
+            maxradiuskm: RADIUS_KM,
+            minmagnitude: MIN_MAGNITUDE,
+            limit: 100  // จำกัดผลลัพธ์สูงสุด
+        });
+
+        const response = await fetch(`${API_URL}&${params.toString()}`);
+        const data = await response.json();
+        
+        // แสดงผลข้อมูล
+        displayData(data.features);
+        
+        // อัปเดตเวลาล่าสุด
+        document.getElementById('update-time').textContent = 
+            `อัปเดตล่าสุด: ${formatThaiDateTime(new Date())}`;
+        
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        document.getElementById('earthquake-data').innerHTML = `
+            <div class="error">
+                <p>⚠️ ไม่สามารถโหลดข้อมูลได้ โปรดลองใหม่ภายหลัง</p>
+                <button onclick="loadEarthquakeData()">ลองอีกครั้ง</button>
+            </div>`;
+    }
+}
+
+// แสดงผลข้อมูลในตาราง
+function displayData(earthquakes) {
+    if (!earthquakes || earthquakes.length === 0) {
+        document.getElementById('earthquake-data').innerHTML = `
+            <p class="no-data">ไม่พบข้อมูลแผ่นดินไหวล่าสุดในรัศมีย่านนี้</p>`;
+        return;
+    }
+
+    // เรียงลำดับจากใหม่ไปเก่า
+    earthquakes.sort((a, b) => b.properties.time - a.properties.time);
+
+    let html = `
+    <table>
+        <thead>
+            <tr>
+                <th>เวลาเกิดเหตุ</th>
+                <th>ขนาด</th>
+                <th>ตำแหน่ง/ระยะห่าง</th>
+                <th>ความลึก (กม.)</th>
+            </tr>
+        </thead>
+        <tbody>`;
+
+    earthquakes.forEach(quake => {
+        const props = quake.properties;
+        const coords = quake.geometry.coordinates;
+        
+        // คำนวณระยะทาง
+        const distance = calculateDistance(
+            CENTER_LAT, CENTER_LON, 
+            coords[1], coords[0]  // USGS ใช้ลำดับ [longitude, latitude]
+        ).toFixed(0);
+
+        // จัดรูปแบบข้อมูล
+        const time = formatThaiDateTime(new Date(props.time));
+        const mag = props.mag.toFixed(1);
+        const depth = coords[2].toFixed(1);
+        
+        // ตรวจสอบแผ่นดินไหวอันตราย
+        const isDanger = props.mag >= DANGER_MAGNITUDE;
+        const rowClass = isDanger ? 'danger-row' : '';
+        
+        html += `
+            <tr class="${rowClass}">
+                <td>${time}</td>
+                <td>${mag}</td>
+                <td>${props.place} <span class="distance">(${distance} กม.)</span></td>
+                <td>${depth}</td>
+            </tr>`;
+    });
+
+    html += `</tbody></table>`;
+    document.getElementById('earthquake-data').innerHTML = html;
+}
+
+// โหลดข้อมูลครั้งแรก
+loadEarthquakeData();
+
+// อัปเดตข้อมูลทุก 10 นาที
+setInterval(loadEarthquakeData, 10 * 60 * 1000);

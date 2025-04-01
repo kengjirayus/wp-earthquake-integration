@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายงานแผ่นดินไหวล่าสุด - Kengji.co</title>
+    <style>
+        :root {
+            --primary-color: #d9534f;
+            --danger-color: #ff4444;
+            --text-color: #333;
+            --light-gray: #f8f9fa;
+            --border-color: #eee;
+        }
+        
+        body {
+            font-family: 'Kanit', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            color: var(--text-color);
+            background-color: #f5f5f5;
+        }
+        
+        header {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin: 0;
+            font-size: 2.2em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .update-time {
+            text-align: right;
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+        
+        .data-source {
+            text-align: right;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 15px;
+            font-style: italic;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        th {
+            background-color: var(--light-gray);
+            padding: 12px 15px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            font-weight: 500;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .danger-row {
+            background-color: var(--danger-color);
+            color: white;
+            font-weight: 500;
+        }
+        
+        .danger-row .distance {
+            color: white;
+        }
+        
+        .loading-container {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .error {
+            text-align: center;
+            color: var(--primary-color);
+            padding: 30px;
+        }
+        
+        .error button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-family: inherit;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+        
+        .error button:hover {
+            background: #c9302c;
+        }
+        
+        .distance {
+            color: #666;
+            font-size: 0.85em;
+            display: block;
+            margin-top: 3px;
+        }
+        
+        .no-data {
+            text-align: center;
+            color: #666;
+            padding: 40px;
+            font-size: 1.1em;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            th, td {
+                padding: 10px 8px;
+                font-size: 14px;
+            }
+            
+            .distance {
+                font-size: 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            header {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+            }
+            
+            .subtitle {
+                font-size: 0.9em;
+            }
+            
+            th, td {
+                padding: 8px 5px;
+                font-size: 13px;
+            }
+            
+            td:nth-child(1) {
+                white-space: nowrap;
+            }
+        }
+    </style>
+    <!-- เพิ่ม Font Kanit สำหรับภาษาไทย -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>รายงานแผ่นดินไหวล่าสุด</h1>
+        <p class="subtitle">ในรัศมี 1,100 กม. จากอนุสาวรีย์ชัยสมรภูมิ (ขนาด 5.0 ขึ้นไป)</p>
+    </header>
+    
+    <div class="container">
+        <div class="update-time" id="update-time"></div>
+        <div id="earthquake-data" class="loading-container">
+            <div class="loading-spinner"></div>
+            <p>กำลังโหลดข้อมูลแผ่นดินไหวล่าสุด...</p>
+        </div>
+        <div class="data-source">แหล่งที่มา: usgs.gov</div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
