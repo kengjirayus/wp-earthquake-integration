@@ -31,13 +31,14 @@ function formatThaiDateTime(date) {
     return date.toLocaleDateString('th-TH', options);
 }
 
-// ปรับความสูง Iframe อัตโนมัติ
-function adjustIframeHeight() {
+// ส่งความสูง iframe ไปยัง WordPress
+function sendIframeHeight() {
     const height = document.documentElement.scrollHeight;
     window.parent.postMessage({
-        type: 'setIframeHeight',
+        type: 'iframeHeight',
         height: height
     }, '*');
+    console.log('Sent iframe height:', height);
 }
 
 // ฟังก์ชันหลักดึงข้อมูล
@@ -77,7 +78,7 @@ async function loadEarthquakeData() {
                 <button onclick="loadEarthquakeData()">ลองอีกครั้ง</button>
             </div>`;
     } finally {
-        adjustIframeHeight(); // ปรับความสูงไม่ว่าจะสำเร็จหรือล้มเหลว
+        sendIframeHeight(); // ส่งความสูงเสมอไม่ว่าจะสำเร็จหรือล้มเหลว
     }
 }
 
@@ -86,7 +87,7 @@ function displayData(earthquakes) {
     if (!earthquakes || earthquakes.length === 0) {
         document.getElementById('earthquake-data').innerHTML = `
             <p class="no-data">ไม่พบข้อมูลแผ่นดินไหวล่าสุดในรัศมีย่านนี้</p>`;
-        adjustIframeHeight();
+        sendIframeHeight();
         return;
     }
 
@@ -146,14 +147,28 @@ function displayData(earthquakes) {
 
     html += `</tbody></table>`;
     document.getElementById('earthquake-data').innerHTML = html;
-    adjustIframeHeight(); // ปรับความสูงหลังแสดงข้อมูล
+    sendIframeHeight(); // ส่งความสูงหลังแสดงข้อมูล
 }
 
-// Event Listeners
-window.addEventListener('load', () => {
-    loadEarthquakeData();
-    window.addEventListener('resize', adjustIframeHeight);
-});
+// ตั้งค่าการสื่อสารกับ iframe
+function setupIframeResizer() {
+    // ส่งความสูงเมื่อโหลดเสร็จ
+    window.addEventListener('load', sendIframeHeight);
+    
+    // ส่งความสูงเมื่อหน้าขยาย/ย่อ
+    new ResizeObserver(sendIframeHeight).observe(document.body);
+    
+    // ตอบสนองเมื่อ WordPress ขอความสูง
+    window.addEventListener('message', function(e) {
+        if (e.data === 'getHeight') {
+            sendIframeHeight();
+        }
+    });
+}
+
+// เริ่มต้นการทำงาน
+setupIframeResizer();
+loadEarthquakeData();
 
 // อัปเดตข้อมูลทุก 10 นาที
 setInterval(loadEarthquakeData, 10 * 60 * 1000);
