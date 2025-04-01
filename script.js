@@ -100,7 +100,7 @@ function displayData(earthquakes) {
             <tr>
                 <th>เวลาเกิดเหตุ</th>
                 <th>ขนาด</th>
-                <th>ตำแหน่ง/ระยะห่าง</th>
+                <th>ศูนย์กลาง/ระยะห่าง</th>
                 <th>ความลึก (กม.)</th>
             </tr>
         </thead>
@@ -138,7 +138,7 @@ function displayData(earthquakes) {
                     <div class="location">
                         <strong>${mainLocation}</strong>
                         <span class="region">${region}</span>
-                        <span class="distance">ห่างจากอนุสาวรีย์ชัยสมรภูมิ ${distance} กม.</span>
+                        <span class="distance">ห่างจากอนุสาวรีย์ฯ ${distance} กม.</span>
                     </div>
                 </td>
                 <td>${depth}</td>

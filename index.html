@@ -29,13 +29,31 @@
             color: var(--text-color);
         }
 
+        /* Header Styles */
+        .page-header {
+            text-align: center;
+            margin: 20px 0 15px;
+            padding: 0 20px;
+        }
+        
+        .page-header h1 {
+            color: #d9534f;
+            font-size: 2.2em;
+            font-weight: 500;
+            margin-bottom: 5px;
+            line-height: 1.3;
+        }
+
         /* Layout สำหรับ Iframe */
         .iframe-container {
             width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 20px;
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
 
         .subtitle {
@@ -45,18 +63,21 @@
             font-size: 1.1em;
         }
 
+        .update-info {
+            text-align: right;
+            margin-bottom: 15px;
+        }
+
         .update-time {
             text-align: right;
             color: #666;
             font-size: 0.9em;
-            margin-bottom: 15px;
+            margin-bottom: 5px;
         }
 
         .data-source {
-            text-align: right;
             color: #666;
             font-size: 0.9em;
-            margin-top: 15px;
             font-style: italic;
         }
 
@@ -171,6 +192,10 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 1.8em;
+            }
+            
             .iframe-container {
                 padding: 15px;
             }
@@ -190,6 +215,10 @@
         }
 
         @media (max-width: 480px) {
+            .page-header h1 {
+                font-size: 1.5em;
+            }
+            
             .iframe-container {
                 padding: 10px;
             }
@@ -212,16 +241,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Header Section -->
+    <header class="page-header">
+        <h1>รายงานแผ่นดินไหวล่าสุด<br>ที่อาจส่งผลกระทบมาที่ประเทศไทย</h1>
+    </header>
+
+    <!-- Main Content -->
     <div class="iframe-container">
         <p class="subtitle">ในรัศมี 1,100 กม. จากอนุสาวรีย์ชัยสมรภูมิ (ขนาด 5.0 ขึ้นไป)</p>
-        <div class="update-time" id="update-time"></div>
+
+        <div class="update-info">
+            <div class="update-time" id="update-time"></div>
+            <div class="data-source">แหล่งที่มา: usgs.gov</div>
+        </div>
         
         <div id="earthquake-data" class="loading-container">
             <div class="loading-spinner"></div>
             <p>กำลังโหลดข้อมูลแผ่นดินไหวล่าสุด...</p>
-        </div>
+        </div>  
         
-        <div class="data-source">แหล่งที่มา: usgs.gov</div>
     </div>
 
     <script src="script.js"></script>
