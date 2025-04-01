@@ -112,11 +112,20 @@ function displayData(earthquakes) {
         const isDanger = props.mag >= DANGER_MAGNITUDE;
         const rowClass = isDanger ? 'danger-row' : '';
         
+        // แยกชื่อสถานที่และประเทศ/จังหวัด
+        const placeParts = props.place.split(', ');
+        const mainLocation = placeParts[0];
+        const region = placeParts.slice(1).join(', ');
+        
         html += `
             <tr class="${rowClass}">
                 <td>${time}</td>
                 <td>${mag}</td>
-                <td>${props.place} <span class="distance">(${distance} กม.)</span></td>
+                <td>
+                    <strong>${mainLocation}</strong><br>
+                    <span class="region">${region}</span><br>
+                    <span class="distance">ห่างจากอนุสาวรีย์ชัยสมรภูมิ ${distance} กม.</span>
+                </td>
                 <td>${depth}</td>
             </tr>`;
     });

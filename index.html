@@ -23,32 +23,18 @@
             background-color: #f5f5f5;
         }
         
-        header {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        
-        h1 {
-            color: var(--primary-color);
-            text-align: center;
-            margin: 0;
-            font-size: 2.2em;
-        }
-        
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-top: 5px;
-        }
-        
         .container {
             background-color: white;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 1.1em;
         }
         
         .update-time {
@@ -84,6 +70,7 @@
         td {
             padding: 12px 15px;
             border-bottom: 1px solid var(--border-color);
+            text-align: center;
         }
         
         .danger-row {
@@ -159,10 +146,6 @@
                 padding: 10px;
             }
             
-            h1 {
-                font-size: 1.8em;
-            }
-            
             th, td {
                 padding: 10px 8px;
                 font-size: 14px;
@@ -174,12 +157,8 @@
         }
         
         @media (max-width: 480px) {
-            header {
+            .container {
                 padding: 15px;
-            }
-            
-            h1 {
-                font-size: 1.5em;
             }
             
             .subtitle {
@@ -200,17 +179,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <h1>รายงานแผ่นดินไหวล่าสุด</h1>
-        <p class="subtitle">ในรัศมี 1,100 กม. จากอนุสาวรีย์ชัยสมรภูมิ (ขนาด 5.0 ขึ้นไป)</p>
-    </header>
-    
     <div class="container">
+        <p class="subtitle">ในรัศมี 1,100 กม. จากอนุสาวรีย์ชัยสมรภูมิ (ขนาด 5.0 ขึ้นไป)</p>
         <div class="update-time" id="update-time"></div>
+        
         <div id="earthquake-data" class="loading-container">
             <div class="loading-spinner"></div>
             <p>กำลังโหลดข้อมูลแผ่นดินไหวล่าสุด...</p>
         </div>
+        
         <div class="data-source">แหล่งที่มา: usgs.gov</div>
     </div>
 
