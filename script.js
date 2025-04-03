@@ -129,9 +129,12 @@ function displayData(earthquakes) {
         // ตรวจสอบแผ่นดินไหวอันตราย
         const isDanger = props.mag >= DANGER_MAGNITUDE;
         const rowClass = isDanger ? 'danger-row' : '';
+
+        // สร้าง URL สำหรับ Google Maps
+        const mapsUrl = `https://www.google.com/maps?q=${coords[1]},${coords[0]}`;
         
         html += `
-            <tr class="${rowClass}">
+             <tr class="${rowClass}" onclick="window.open('${mapsUrl}', '_blank')" style="cursor: pointer;">
                 <td>${time}</td>
                 <td>${mag}</td>
                 <td>
