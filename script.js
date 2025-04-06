@@ -2,7 +2,7 @@
 const API_URL = 'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson';
 const CENTER_LAT = 13.764618; // ละติจูดอนุสาวรีย์ชัยสมรภูมิ
 const CENTER_LON = 100.538572; // ลองติจูดอนุสาวรีย์ชัยสมรภูมิ
-const RADIUS_KM = 1100;       // รัศมี 1,100 กม.
+const RADIUS_KM = 1300;       // รัศมี 1,300 กม.
 const MIN_MAGNITUDE = 5.0;    // แผ่นดินไหวขนาด 5.0 ขึ้นไป
 const DANGER_MAGNITUDE = 6.0; // ระดับที่ถือว่าอันตราย (สีแดง)
 
